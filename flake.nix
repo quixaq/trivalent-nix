@@ -87,19 +87,19 @@
 
           trivalentUnwrapped = pkgs.stdenv.mkDerivation {
             pname = "trivalent";
-            version = "";
+            version = "150.0.7871.128";
 
             src = pkgs.fetchurl {
               url =
                 if arch == "x86_64" then
-                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.46-445734.x86_64.rpm"
+                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.128-446079.x86_64.rpm"
                 else
-                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.46-445735.aarch64.rpm";
+                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.128-446081.aarch64.rpm";
               hash =
                 if arch == "x86_64" then
-                  "sha256-KeTngh7XzSVic0NSU3bnhLLwr2KZzqmGv4M8m6YKlKU="
+                  "sha256-Ao7Ted8NeQNnG0gt3OCmJTpw+MSiqb5MeCCJLy+/77M="
                 else
-                  "sha256-9PuR2G75sSVREHEflmdHJRFuuo+ggFWF+FAI4YTuwAs=";
+                  "sha256-veHa2MNy0DRuNeeIITKoneoMn1g+3qPz36AeyIDzc0A=";
             };
 
             nativeBuildInputs = [
