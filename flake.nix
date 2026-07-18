@@ -115,9 +115,9 @@
               cp -r usr/* $out/
 
               rm $out/bin/trivalent
-              ln -s $out/lib64/trivalent/trivalent.sh $out/bin/trivalent
+              ln -s $out/lib64/trivalent/trivalent.sh $out/bin/trivalent-unwrapped
 
-              substituteInPlace $out/bin/trivalent \
+              substituteInPlace $out/bin/trivalent-unwrapped \
                 --replace "id" "${pkgs.coreutils}/bin/id" \
                 --replace "uname" "${pkgs.coreutils}/bin/uname" \
                 --replace "readlink" "${pkgs.coreutils}/bin/readlink" \
@@ -151,8 +151,14 @@
         pkgs.buildFHSEnv {
           name = "trivalent";
           runScript = "${trivalentUnwrapped}/lib/trivalent/trivalent";
-        };
+          extraInstallCommands = ''
+            mkdir -p $out/share/applications
+            cp -r ${trivalentUnwrapped}/share $out/
 
+            substituteInPlace $out/share/applications/trivalent.desktop \
+              --replace "/usr/bin/trivalent" "$out/bin/trivalent"
+          '';
+        };
       nixosModules.default = { pkgs, ... }: {
         environment.systemPackages = [ self.packages.${pkgs.stdenv.hostPlatform.system}.default ];
       };
