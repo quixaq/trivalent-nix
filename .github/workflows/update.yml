@@ -1,0 +1,191 @@
+name: Update Trivalent
+on:
+  schedule:
+    - cron: "19 7 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-updates:
+    name: Check for updates
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:44@sha256:f717d3f59ea0dc45d3c024c9477e786bab7d418d26636920d17b48016f1e69ca
+    outputs:
+      update: ${{ steps.check.outputs.update }}
+      x86_64-link: ${{ steps.check.outputs.latest-x86_64 }}
+      aarch64-link: ${{ steps.check.outputs.latest-aarch64 }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6.0.2
+      - name: check for new releases
+        run: |
+          CURRENT_X86_64=$(\
+            grep \
+              'target-x86_64-dl' \
+              flake.nix \
+              | sed -E 's/.*"([^"]+)".*/\1/')
+
+          CURRENT_AARCH64=$(\
+            grep \
+              'target-aarch64-dl' \
+              flake.nix \
+              | sed -E 's/.*"([^"]+)".*/\1/')
+
+          REPO_RAW=$(\
+            dnf repoquery \
+              --repofrompath=temp,https://repo.secureblue.dev/ \
+              --repoid=temp \
+              --queryformat="https://repo.secureblue.dev/Packages/%{name}-%{version}-%{release}.%{arch}.rpm\n")
+
+          LATEST_X86_64=$(\
+            echo "$REPO_RAW" \
+              | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*x86_64\.rpm$' \
+              | sort -V \
+              | tail -n 1)
+
+          LATEST_AARCH64=$(\
+            echo "$REPO_RAW" \
+              | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*aarch64\.rpm$' \
+              | sort -V \
+              | tail -n 1)
+
+          UPDATE_TRIVALENT=0
+          if [[ "$LATEST_X86_64" != "$CURRENT_X86_64" || "$LATEST_AARCH64" != "$CURRENT_AARCH64" ]]; then
+              UPDATE_TRIVALENT=1
+          fi
+
+          echo "update=$UPDATE_TRIVALENT" >> $GITHUB_OUTPUT
+          echo "latest-x86_64=$LATEST_X86_64" >> $GITHUB_OUTPUT
+          echo "latest-aarch64=$LATEST_AARCH64" >> $GITHUB_OUTPUT
+
+  update:
+    needs: check-updates
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: checkout
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        uses: actions/checkout@v6.0.2
+      - name: get nix
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        uses: DeterminateSystems/determinate-nix-action@main
+      - name: setup temp dir
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        run: |
+          mkdir temp_workspace
+
+      - name: fetch the files
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        env:
+          LATEST_X86_64: ${{ needs.check-updates.outputs.x86_64-link }}
+          LATEST_AARCH64: ${{ needs.check-updates.outputs.aarch64-link }}
+        working-directory: temp_workspace
+        run: |
+          mkdir x86_64
+          cd x86_64
+          curl -O $LATEST_X86_64 || exit 1
+          cd ..
+          mkdir aarch64
+          cd aarch64
+          curl -O $LATEST_AARCH64 || exit 1
+          cd ..
+          curl -O https://repo.secureblue.dev/secureblue.gpg || exit 1
+
+          X86_64_VERSION=$($LATEST_X86_64 | sed -E 's/.*trivalent-(.*)\.x86_64\.rpm/\1/')
+          AARCH64_VERSION=$($LATEST_AARCH64 | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
+
+          gh release download $X86_64_VERSION \
+            --repo secureblue/Trivalent
+            --pattern multiple.intoto.jsonl
+            --dir ./x86_64
+
+          gh release download $AARCH64_VERSION \
+            --repo secureblue/Trivalent
+            --pattern multiple.intoto.jsonl
+            --dir ./aarch64
+
+      - name: get slsa-verifier
+        uses: slsa-framework/slsa-verifier/actions/installer@v2.7.1
+
+      - name: get rpm
+        run: |
+          nix profile install nixpkgs#rpm
+
+      - name: verify the files
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        env:
+          LATEST_X86_64: ${{ needs.check-updates.outputs.x86_64-link }}
+          LATEST_AARCH64: ${{ needs.check-updates.outputs.aarch64-link }}
+        working-directory: temp_workspace
+        run: |
+          EXPECTED_HASH="40d8ad2714bb09873153668d9c647362acc48677a2c0defb0c7d6576041fd555"
+          echo "$EXPECTED_HASH  secureblue.gpg" \
+            | sha256sum --check --strict \
+            || exit 1
+
+          TEMP_DB=$(mktemp -d)
+          rpm --dbpath "$TEMP_DB" --import secureblue.gpg
+
+          rpm --dbpath "$TEMP_DB" -K x86_64/$(basename $LATEST_X86_64) || exit 1
+          rpm --dbpath "$TEMP_DB" -K aarch64/$(basename $LATEST_AARCH64) || exit 1
+
+          rm -rf "$TEMP_DB"
+
+          cd x86_64
+          slsa-verifier verify-artifact $(basename $LATEST_X86_64) \
+            --provenance-path multiple.intoto.jsonl \
+            --source-uri github.com/secureblue/Trivalent \
+            || exit 1
+
+          cd ../aarch64
+          slsa-verifier verify-artifact $(basename $LATEST_AARCH64) \
+            --provenance-path multiple.intoto.jsonl \
+            --source-uri github.com/secureblue/Trivalent \
+            || exit 1
+
+      - name: replace the link
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        env:
+          LATEST_X86_64: ${{ needs.check-updates.outputs.x86_64-link }}
+          LATEST_AARCH64: ${{ needs.check-updates.outputs.aarch64-link }}
+        run: |
+          sed -i -E \
+            -e "s#(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.x86_64\.rpm)(.*#target-x86_64-dl)#$LATEST_X86_64\2#" \
+            -e "s#(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.aarch64\.rpm)(.*#target-aarch64-dl)#$LATEST_AARCH64\2#" \
+            flake.nix
+      - name: get the hashes
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        env:
+          LATEST_X86_64: ${{ needs.check-updates.outputs.x86_64-link }}
+          LATEST_AARCH64: ${{ needs.check-updates.outputs.aarch64-link }}
+        working-directory: temp_workspace
+        run: |
+          echo "X86_64_HASH=$(\
+            nix hash to-sri \
+              --type sha256 \
+              $(nix-prefetch-url file:///dev/stdin < x86_64/$(basename $LATEST_X86_64)))" \
+            >> $GITHUB_ENV
+          echo "AARCH64_HASH=$(\
+            nix hash to-sri \
+              --type sha256 \
+              $(nix-prefetch-url file:///dev/stdin < aarch64/$(basename $LATEST_AARCH64)))" \
+            >> $GITHUB_ENV
+
+      - name: update the hashes
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        run: |
+          sed -i -E \
+            -e '/# target-x86_64-hash/s|"sha256-[^"]*"|$X86_64_HASH|' \
+            -e '/# target-aarch64-hash/s|"sha256-[^"]*"|$AARCH64_HASH|' \
+            flake.nix
+
+      - name: commit changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "chore: update trivalent"
+          git push
