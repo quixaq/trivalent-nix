@@ -154,10 +154,8 @@ jobs:
           LATEST_X86_64: ${{ needs.check-updates.outputs.x86_64-link }}
           LATEST_AARCH64: ${{ needs.check-updates.outputs.aarch64-link }}
         run: |
-          sed -i -E \
-            -e 's,(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.x86_64\.rpm)(.*#target-x86_64-dl),'"$LATEST_X86_64"'\2,' \
-            -e 's,(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.aarch64\.rpm)(.*#target-aarch64-dl),'"$LATEST_AARCH64"'\2,' \
-            flake.nix
+          sed -i -E "s|\"[^\"]+\"(.*# target-x86_64-dl)|\"$LATEST_X86_64\"\1|" flake.nix
+          sed -i "/# target-aarch64-dl/s@dl = \"[^\"]*\";@hash = \"$LATEST_AARCH64\";@" flake.nix
       - name: get the hashes
         if: ${{ needs.check-updates.outputs.update == '1' }}
         env:
@@ -179,10 +177,8 @@ jobs:
       - name: update the hashes
         if: ${{ needs.check-updates.outputs.update == '1' }}
         run: |
-          sed -i -E \
-            -e '/# target-x86_64-hash/s|"sha256-[^"]*"|'"$X86_64_HASH"'|' \
-            -e '/# target-aarch64-hash/s|"sha256-[^"]*"|'"$AARCH64_HASH"'|' \
-            flake.nix
+          sed -i -E "s|\"[^\"]+\"(.*# target-x86_64-hash)|\"$X86_64_HASH\"\1|" flake.nix
+          sed -i -E "s|\"[^\"]+\"(.*# target-aarch64-hash)|\"$AARCH64_HASH\";\1|" flake.nix
 
       - name: commit changes
         run: |
