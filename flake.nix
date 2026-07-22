@@ -97,9 +97,9 @@
                   "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.128-446081.aarch64.rpm"; # target-aarch64-dl
               hash =
                 if arch == "x86_64" then
-                  "sha256-Ao7Ted8NeQNnG0gt3OCmJTpw+MSiqb5MeCCJLy+/77M=" # target-x86_64-hash
+                  $X86_64_HASH # target-x86_64-hash
                 else
-                  "sha256-veHa2MNy0DRuNeeIITKoneoMn1g+3qPz36AeyIDzc0A="; # target-aarch64-hash
+                  $AARCH64_HASH; # target-aarch64-hash
 
             };
 
