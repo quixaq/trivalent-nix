@@ -18,6 +18,7 @@ jobs:
       - name: checkout
         uses: actions/checkout@v6.0.2
       - name: check for new releases
+        id: check
         run: |
           CURRENT_X86_64=$(\
             grep \
