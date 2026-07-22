@@ -98,13 +98,13 @@ jobs:
           AARCH64_VERSION=$(echo "$LATEST_AARCH64" | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
 
           gh release download "$X86_64_VERSION" \
-            --repo secureblue/Trivalent
-            --pattern multiple.intoto.jsonl
+            --repo secureblue/Trivalent \
+            --pattern multiple.intoto.jsonl \
             --dir ./x86_64
 
           gh release download "$AARCH64_VERSION" \
-            --repo secureblue/Trivalent
-            --pattern multiple.intoto.jsonl
+            --repo secureblue/Trivalent \
+            --pattern multiple.intoto.jsonl \
             --dir ./aarch64
 
       - name: get slsa-verifier
