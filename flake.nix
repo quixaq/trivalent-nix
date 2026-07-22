@@ -94,7 +94,7 @@
                 if arch == "x86_64" then
                   "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.181-446169.x86_64.rpm" # target-x86_64-dl
                 else
-                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.128-446081.aarch64.rpm"; # target-aarch64-dl
+                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.181-446171.aarch64.rpm"; # target-aarch64-dl
               hash =
                 if arch == "x86_64" then
                   "sha256-QaJh/oFMk7NSSULtJj0WuOksF0cGIdL9naSFiirAs6E=" # target-x86_64-hash
