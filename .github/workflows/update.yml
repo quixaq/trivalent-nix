@@ -155,7 +155,7 @@ jobs:
           LATEST_AARCH64: ${{ needs.check-updates.outputs.aarch64-link }}
         run: |
           sed -i -E "s|\"[^\"]+\"(.*# target-x86_64-dl)|\"$LATEST_X86_64\"\1|" flake.nix
-          sed -i "/# target-aarch64-dl/s@dl = \"[^\"]*\";@hash = \"$LATEST_AARCH64\";@" flake.nix
+          sed -i -E "s|\"[^\"]+\"(.*# target-aarch64-dl)|\"$LATEST_AARCH64\"\1|" flake.nix
       - name: get the hashes
         if: ${{ needs.check-updates.outputs.update == '1' }}
         env:
