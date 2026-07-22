@@ -155,8 +155,8 @@ jobs:
           LATEST_AARCH64: ${{ needs.check-updates.outputs.aarch64-link }}
         run: |
           sed -i -E \
-            -e "s#(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.x86_64\.rpm)(.*#target-x86_64-dl)#$LATEST_X86_64\2#" \
-            -e "s#(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.aarch64\.rpm)(.*#target-aarch64-dl)#$LATEST_AARCH64\2#" \
+            -e "s,(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.x86_64\.rpm)(.*#target-x86_64-dl),$LATEST_X86_64\2," \
+            -e "s,(https://repo.secureblue.dev/Packages/trivalent-[^\"]+\.aarch64\.rpm)(.*#target-aarch64-dl),$LATEST_AARCH64\2," \
             flake.nix
       - name: get the hashes
         if: ${{ needs.check-updates.outputs.update == '1' }}
