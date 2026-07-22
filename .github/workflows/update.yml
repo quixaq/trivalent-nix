@@ -180,6 +180,11 @@ jobs:
           sed -i -E "s|\"[^\"]+\"(.*# target-x86_64-hash)|\"$X86_64_HASH\"\1|" flake.nix
           sed -i -E "s|\"[^\"]+\"(.*# target-aarch64-hash)|\"$AARCH64_HASH\";\1|" flake.nix
 
+      - name: build
+        if: ${{ needs.check-updates.outputs.update == '1' }}
+        run: |
+          nix build .
+
       - name: commit changes
         run: |
           git config --global user.name "github-actions[bot]"
