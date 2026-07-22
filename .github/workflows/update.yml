@@ -107,9 +107,11 @@ jobs:
             --dir ./aarch64
 
       - name: get slsa-verifier
+        if: ${{ needs.check-updates.outputs.update == '1' }}
         uses: slsa-framework/slsa-verifier/actions/installer@v2.7.1
 
       - name: get rpm
+        if: ${{ needs.check-updates.outputs.update == '1' }}
         run: |
           nix profile install nixpkgs#rpm
 
