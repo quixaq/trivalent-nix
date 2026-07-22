@@ -94,8 +94,8 @@ jobs:
           cd ..
           curl -O https://repo.secureblue.dev/secureblue.gpg || exit 1
 
-          X86_64_VERSION=$($LATEST_X86_64 | sed -E 's/.*trivalent-(.*)\.x86_64\.rpm/\1/')
-          AARCH64_VERSION=$($LATEST_AARCH64 | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
+          X86_64_VERSION=$(echo "$LATEST_X86_64" | sed -E 's/.*trivalent-(.*)\.x86_64\.rpm/\1/')
+          AARCH64_VERSION=$(echo "$LATEST_AARCH64" | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
 
           gh release download "$X86_64_VERSION" \
             --repo secureblue/Trivalent
