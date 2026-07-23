@@ -186,6 +186,7 @@ jobs:
           nix build .
 
       - name: commit changes
+        if: ${{ needs.check-updates.outputs.update == '1' }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
