@@ -92,14 +92,14 @@
             src = pkgs.fetchurl {
               url =
                 if arch == "x86_64" then
-                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.181-446169.x86_64.rpm" # target-x86_64-dl
+                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.186-446215.x86_64.rpm" # target-x86_64-dl
                 else
-                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.181-446171.aarch64.rpm"; # target-aarch64-dl
+                  "https://repo.secureblue.dev/Packages/trivalent-150.0.7871.186-446217.aarch64.rpm"; # target-aarch64-dl
               hash =
                 if arch == "x86_64" then
-                  "sha256-QaJh/oFMk7NSSULtJj0WuOksF0cGIdL9naSFiirAs6E=" # target-x86_64-hash
+                  "sha256-mEc2OeVoQuUiBqLmb/NzNWk1ogyv6+nyH066WGVXP4o=" # target-x86_64-hash
                 else
-                  "sha256-PaCjGm+FW8Bv8BmBDstJRvOqgjE42jQvIqsqv9A0rvo="; # target-aarch64-hash
+                  "sha256-lq0MvGo13PT7VS4k5eV/Cfqcyo32q1pcKKKaq1a7dRg="; # target-aarch64-hash
 
             };
 
