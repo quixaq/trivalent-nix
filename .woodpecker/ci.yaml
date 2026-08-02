@@ -13,10 +13,14 @@ steps:
       - REPO_RAW=$(dnf repoquery --repofrompath=temp,https://repo.secureblue.dev/ --repoid=temp --queryformat="https://repo.secureblue.dev/Packages/%{name}-%{version}-%{release}.%{arch}.rpm\n")
 
       - |
-        : "${LATEST_X86_64:=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*x86_64\.rpm$' | sort -V | tail -n 1)}"
+        if [ -z "${LATEST_X86_64+x}" ]; then
+          LATEST_X86_64=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*x86_64\.rpm$' | sort -V | tail -n 1)
+        fi
         echo "$LATEST_X86_64"
       - |
-        : "${LATEST_AARCH64:=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*aarch64\.rpm$' | sort -V | tail -n 1)}"
+        if [ -z "${LATEST_AARCH64+x}" ]; then
+          LATEST_AARCH64=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*aarch64\.rpm$' | sort -V | tail -n 1)
+        fi
         echo "$LATEST_AARCH64"
 
       - |
