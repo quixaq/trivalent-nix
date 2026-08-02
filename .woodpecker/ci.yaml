@@ -12,8 +12,12 @@ steps:
 
       - REPO_RAW=$(dnf repoquery --repofrompath=temp,https://repo.secureblue.dev/ --repoid=temp --queryformat="https://repo.secureblue.dev/Packages/%{name}-%{version}-%{release}.%{arch}.rpm\n")
 
-      - LATEST_X86_64=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*x86_64\.rpm$' | sort -V | tail -n 1)
-      - LATEST_AARCH64=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*aarch64\.rpm$' | sort -V | tail -n 1)
+      - |
+        LATEST_X86_64=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*x86_64\.rpm$' | sort -V | tail -n 1)
+        echo "$LATEST_X86_64"
+      - |
+        LATEST_AARCH64=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*aarch64\.rpm$' | sort -V | tail -n 1)
+        echo "LATEST_AARCH64"
 
       - |
         if [[ "$LATEST_X86_64" == "$CURRENT_X86_64" && "$LATEST_AARCH64" == "$CURRENT_AARCH64" ]]; then
@@ -31,9 +35,15 @@ steps:
       - cd ../aarch64 && curl -O "$LATEST_AARCH64" || exit 1
       - cd .. && curl -O https://repo.secureblue.dev/secureblue.gpg || exit 1
 
-      - X86_64_VERSION=$(echo "$LATEST_X86_64" | sed -E 's/.*trivalent-(.*)\.x86_64\.rpm/\1/')
-      - AARCH64_VERSION=$(echo "$LATEST_AARCH64" | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
-      - STRIPPED_VERSION=$(echo "$X86_64_VERSION" | sed -E 's/-[^-]+$//')
+      - |
+        X86_64_VERSION=$(echo "$LATEST_X86_64" | sed -E 's/.*trivalent-(.*)\.x86_64\.rpm/\1/')
+        echo "$X86_64_VERSION"
+      - |
+        AARCH64_VERSION=$(echo "$LATEST_AARCH64" | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
+        echo "$AARCH64_VERSION"
+      - |
+        STRIPPED_VERSION=$(echo "$X86_64_VERSION" | sed -E 's/-[^-]+$//')
+        echo "$STRIPPED_VERSION"
 
       - gh release download "$X86_64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./x86_64
       - gh release download "$AARCH64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./aarch64
