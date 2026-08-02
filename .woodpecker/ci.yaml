@@ -35,6 +35,7 @@ steps:
 
       - X86_64_VERSION=$(echo "$LATEST_X86_64" | sed -E 's/.*trivalent-(.*)\.x86_64\.rpm/\1/')
       - AARCH64_VERSION=$(echo "$LATEST_AARCH64" | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
+      - STRIPPED_VERSION=$(echo "$X86_64_VERSION" | sed -E 's/-[^-]+$//')
 
       - gh release download "$X86_64_VERSION" \
             --repo secureblue/Trivalent \
@@ -61,6 +62,7 @@ steps:
 
       - sed -i -E "s|\"[^\"]+\"(.*# target-x86_64-dl)|\"$LATEST_X86_64\"\1|" flake.nix
       - sed -i -E "s|\"[^\"]+\"(.*# target-aarch64-dl)|\"$LATEST_AARCH64\"\1|" flake.nix
+      - sed -i -E "s|\"[^\"]+\"(.*# target-ver)|\"$STRIPPED_VERSION\"\1|" flake.nix
 
       - X86_64_HASH=$(nix hash to-sri --type sha256 $(nix-prefetch-url file:///dev/stdin < temp_workspace/x86_64/$(basename "$LATEST_X86_64")))
       - AARCH64_HASH=$(nix hash to-sri --type sha256 $(nix-prefetch-url file:///dev/stdin < temp_workspace/aarch64/$(basename "$LATEST_AARCH64")))

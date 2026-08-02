@@ -87,7 +87,7 @@
 
           trivalentUnwrapped = pkgs.stdenv.mkDerivation {
             pname = "trivalent";
-            version = "150.0.7871.128";
+            version = "150.0.7871.181"; # target-ver
 
             src = pkgs.fetchurl {
               url =
