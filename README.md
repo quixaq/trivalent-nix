@@ -6,7 +6,7 @@ proudly held together by spit and duct tape
 ## Installation
 add trivalent to inputs:
 ```nix
-inputs.trivalent-nix = "github:quixaq/trivalent-nix";
+inputs.trivalent-nix = "git+https://codeberg.org/quixaq/trivalent-nix";
 ```
 add module to nixosSystem
 ```nix
