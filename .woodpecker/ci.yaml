@@ -35,8 +35,6 @@ steps:
       - mkdir temp_workspace
       - cd temp_workspace
       - mkdir x86_64 && mkdir aarch64
-      - gh release download "$X86_64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./x86_64
-      - gh release download "$AARCH64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./aarch64
       - cd x86_64 && curl -O "$LATEST_X86_64" || exit 1
       - cd ../aarch64 && curl -O "$LATEST_AARCH64" || exit 1
       - cd .. && curl -O https://repo.secureblue.dev/secureblue.gpg || exit 1
@@ -50,6 +48,9 @@ steps:
       - |
         STRIPPED_VERSION=$(echo "$X86_64_VERSION" | sed -E 's/-[^-]+$//')
         echo "$STRIPPED_VERSION"
+
+      - gh release download "$X86_64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./x86_64
+      - gh release download "$AARCH64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./aarch64
 
       - EXPECTED_HASH="40d8ad2714bb09873153668d9c647362acc48677a2c0defb0c7d6576041fd555"
       - echo "$EXPECTED_HASH  secureblue.gpg" | sha256sum --check --strict || exit 1
