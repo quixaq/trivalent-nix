@@ -37,15 +37,8 @@ steps:
       - AARCH64_VERSION=$(echo "$LATEST_AARCH64" | sed -E 's/.*trivalent-(.*)\.aarch64\.rpm/\1/')
       - STRIPPED_VERSION=$(echo "$X86_64_VERSION" | sed -E 's/-[^-]+$//')
 
-      - gh release download "$X86_64_VERSION" \
-            --repo secureblue/Trivalent \
-            --pattern multiple.intoto.jsonl \
-            --dir ./x86_64
-
-      - gh release download "$AARCH64_VERSION" \
-            --repo secureblue/Trivalent \
-            --pattern multiple.intoto.jsonl \
-            --dir ./aarch64
+      - gh release download "$X86_64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./x86_64
+      - gh release download "$AARCH64_VERSION" --repo secureblue/Trivalent --pattern multiple.intoto.jsonl --dir ./aarch64
 
       - EXPECTED_HASH="40d8ad2714bb09873153668d9c647362acc48677a2c0defb0c7d6576041fd555"
       - echo "$EXPECTED_HASH  secureblue.gpg" | sha256sum --check --strict || exit 1
