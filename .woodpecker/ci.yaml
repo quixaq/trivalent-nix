@@ -24,7 +24,6 @@ steps:
         fi
 
       - curl --proto '=https' --tlsv1.2 -sSf https://install.determinate.systems/nix | sh -s -- install --no-confirm
-      - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
       - nix profile add nixpkgs#slsa-verifier nixpkgs#git nixpkgs#jq nixpkgs#rpm nixpkgs#gh
       - mkdir temp_workspace
       - cd temp_workspace
