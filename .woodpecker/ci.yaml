@@ -63,7 +63,7 @@ steps:
 
       - cd x86_64 && ~/go/bin/slsa-verifier verify-artifact $(basename "$LATEST_X86_64") --provenance-path multiple.intoto.jsonl --source-uri github.com/secureblue/Trivalent || exit 1
       - cd ../aarch64 && ~/go/bin/slsa-verifier verify-artifact $(basename "$LATEST_AARCH64") --provenance-path multiple.intoto.jsonl --source-uri github.com/secureblue/Trivalent || exit 1
-      - cd ..
+      - cd ../..
 
       - sed -i -E "s|\"[^\"]+\"(.*# target-x86_64-dl)|\"$LATEST_X86_64\"\1|" flake.nix
       - sed -i -E "s|\"[^\"]+\"(.*# target-aarch64-dl)|\"$LATEST_AARCH64\"\1|" flake.nix
