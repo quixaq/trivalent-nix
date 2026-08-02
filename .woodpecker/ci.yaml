@@ -23,7 +23,7 @@ steps:
           exit 0
         fi
 
-      - dnf install -y nix jq golang git rpm
+      - dnf install -y nix jq golang git rpm gh
       - go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
 
       - mkdir temp_workspace
