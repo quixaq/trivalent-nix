@@ -7,7 +7,7 @@ steps:
   - name: check-and-update-trivalent
     image: fedora:44@sha256:f717d3f59ea0dc45d3c024c9477e786bab7d418d26636920d17b48016f1e69ca
     commands:
-      - dnf install -y curl findutils coreutils
+      - dnf install -y curl findutils coreutils nix
 
       - CURRENT_X86_64=$(grep 'target-x86_64-dl' flake.nix | sed -E 's/.*"([^"]+)".*/\1/')
       - CURRENT_AARCH64=$(grep 'target-aarch64-dl' flake.nix | sed -E 's/.*"([^"]+)".*/\1/')
@@ -23,7 +23,6 @@ steps:
           exit 0
         fi
 
-      - curl --proto '=https' --tlsv1.2 -sSf https://install.determinate.systems/nix | sh -s -- install --no-confirm
       - nix profile add nixpkgs#slsa-verifier nixpkgs#git nixpkgs#jq nixpkgs#rpm nixpkgs#gh
       - mkdir temp_workspace
       - cd temp_workspace
