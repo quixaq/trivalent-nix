@@ -60,8 +60,8 @@ steps:
       - rpm --dbpath "$TEMP_DB" -K aarch64/$(basename "$LATEST_AARCH64") || exit 1
       - rm -rf "$TEMP_DB"
 
-      - cd x86_64 && slsa-verifier verify-artifact $(basename "$LATEST_X86_64") --provenance-path multiple.intoto.jsonl --source-uri github.com/secureblue/Trivalent || exit 1
-      - cd ../aarch64 && slsa-verifier verify-artifact $(basename "$LATEST_AARCH64") --provenance-path multiple.intoto.jsonl --source-uri github.com/secureblue/Trivalent || exit 1
+      - cd x86_64 && ~/go/bin/slsa-verifier verify-artifact $(basename "$LATEST_X86_64") --provenance-path multiple.intoto.jsonl --source-uri github.com/secureblue/Trivalent || exit 1
+      - cd ../aarch64 && ~/go/bin/slsa-verifier verify-artifact $(basename "$LATEST_AARCH64") --provenance-path multiple.intoto.jsonl --source-uri github.com/secureblue/Trivalent || exit 1
       - cd ..
 
       - sed -i -E "s|\"[^\"]+\"(.*# target-x86_64-dl)|\"$LATEST_X86_64\"\1|" flake.nix
