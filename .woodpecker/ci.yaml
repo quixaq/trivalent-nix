@@ -17,7 +17,7 @@ steps:
         echo "$LATEST_X86_64"
       - |
         : "${LATEST_AARCH64:=$(echo "$REPO_RAW" | grep '^https://repo.secureblue.dev/Packages/trivalent-[0-9].*aarch64\.rpm$' | sort -V | tail -n 1)}"
-        echo "LATEST_AARCH64"
+        echo "$LATEST_AARCH64"
 
       - |
         if [[ "$LATEST_X86_64" == "$CURRENT_X86_64" && "$LATEST_AARCH64" == "$CURRENT_AARCH64" ]]; then
