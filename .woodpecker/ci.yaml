@@ -7,7 +7,7 @@ steps:
   - name: check-and-update-trivalent
     image: fedora:44@sha256:f717d3f59ea0dc45d3c024c9477e786bab7d418d26636920d17b48016f1e69ca
     commands:
-      - dnf install -y curl findutils coreutils nix
+      - dnf install -y findutils coreutils
 
       - CURRENT_X86_64=$(grep 'target-x86_64-dl' flake.nix | sed -E 's/.*"([^"]+)".*/\1/')
       - CURRENT_AARCH64=$(grep 'target-aarch64-dl' flake.nix | sed -E 's/.*"([^"]+)".*/\1/')
@@ -23,7 +23,9 @@ steps:
           exit 0
         fi
 
-      - nix profile add nixpkgs#slsa-verifier nixpkgs#git nixpkgs#jq nixpkgs#rpm nixpkgs#gh
+      - dnf install -y nix jq golang git rpm
+      - go install github.com/slsa-framework/slsa-verifier/v2/cli/slsa-verifier@v2.7.1
+
       - mkdir temp_workspace
       - cd temp_workspace
       - mkdir x86_64 && mkdir aarch64
