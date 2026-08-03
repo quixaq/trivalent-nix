@@ -81,4 +81,11 @@ steps:
       - git config --global user.email "woodpecker-ci[bot]@codeberg.org"
       - git add .
       - "git commit -m \"chore: update trivalent\""
-      - git push origin HEAD:main
+
+  - name: push changes
+    image: appleboy/drone-git-push
+    settings:
+      branch: main
+      remote: git@codeberg.org:quixaq/trivalent-nix.git
+      ssh_key:
+        from_secret: deploy_key
