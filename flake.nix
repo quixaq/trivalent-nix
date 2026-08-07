@@ -31,12 +31,12 @@
           version = "2.43";
 
           src = pkgs.fetchurl {
-            url = "https://dl.fedoraproject.org/pub/fedora/linux/updates/44/Everything/${arch}/Packages/g/glibc-2.43-7.fc44.${arch}.rpm";
+            url = "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/${arch}/os/Packages/g/glibc-2.43-2.fc44.${arch}.rpm";
             hash =
               if arch == "x86_64" then
-                "sha256-JpOkT58Pdf8PjeSTR6Sk+ooopVzO39HLtQG/XgZ1WWg="
+                "sha256-kN34GDK6UY+HaCZKaUTQsC4DCsx+eKou2QfX530KBp8="
               else
-                "sha256-taoQl6WeGop0PlI/0dJv+b1xnmfyoa5gMXErrTjOKAo=";
+                "sha256-2hH8tKFtAItM9mlV/Ejlv2p/Q26DR9j0Q/gZNwnJgJg=";
           };
 
           nativeBuildInputs = [
