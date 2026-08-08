@@ -82,6 +82,7 @@
             pkgs.udev
             pkgs.libcanberra-gtk3
             pkgs.bubblewrap
+            pkgs.libGL
           ];
           rpaths = pkgs.lib.concatStringsSep "/lib:" rpathsList;
 
