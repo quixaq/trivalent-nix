@@ -88,19 +88,19 @@
 
           trivalentUnwrapped = pkgs.stdenv.mkDerivation {
             pname = "trivalent";
-            version = "153.0.8010.36"; # target-ver
+            version = "153.0.8010.47"; # target-ver
 
             src = pkgs.fetchurl {
               url =
                 if arch == "x86_64" then
-                  "https://repo.secureblue.dev/Packages/trivalent-153.0.8010.36-447235.x86_64.rpm" # target-x86_64-dl
+                  "https://repo.secureblue.dev/Packages/trivalent-153.0.8010.47-447379.x86_64.rpm" # target-x86_64-dl
                 else
-                  "https://repo.secureblue.dev/Packages/trivalent-153.0.8010.36-447317.aarch64.rpm"; # target-aarch64-dl
+                  "https://repo.secureblue.dev/Packages/trivalent-153.0.8010.47-447384.aarch64.rpm"; # target-aarch64-dl
               hash =
                 if arch == "x86_64" then
-                  "sha256-jPs5ZEF9SR38V1xqidzJgP8jxbyvE11kGosFg5+1YJk=" # target-x86_64-hash
+                  "sha256-xntD0cM6dtLhxOepXkt7565bE/ov9PPZYEJopLOrpwE=" # target-x86_64-hash
                 else
-                  "sha256-QpfCyimhtO+Nr7erNP0uU160WB5+aDpfDJ22eJzf8vw="; # target-aarch64-hash
+                  "sha256-Fab4qy/WVr0YE7rp9lAMU1Y9Fs0+5eqvcKfZaxAQKUs="; # target-aarch64-hash
 
             };
 
