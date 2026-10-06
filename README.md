@@ -1,6 +1,5 @@
 # trivalent-nix
 an **unofficial** nix flake for [trivalent](https://github.com/secureblue/Trivalent)  
-proudly held together by spit and duct tape
 
 
 ## Installation

@@ -24,68 +24,9 @@
           default = self.packages.aarch64-linux.trivalent;
         };
       };
-      lib.mkGlibC =
-        pkgs: arch:
-        pkgs.stdenv.mkDerivation {
-          pname = "glibc";
-          version = "2.43";
-
-          src = pkgs.fetchurl {
-            url = "https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/${arch}/os/Packages/g/glibc-2.43-2.fc44.${arch}.rpm";
-            hash =
-              if arch == "x86_64" then
-                "sha256-kN34GDK6UY+HaCZKaUTQsC4DCsx+eKou2QfX530KBp8="
-              else
-                "sha256-2hH8tKFtAItM9mlV/Ejlv2p/Q26DR9j0Q/gZNwnJgJg=";
-          };
-
-          nativeBuildInputs = [
-            pkgs.rpm
-            pkgs.cpio
-          ];
-
-          unpackPhase = "rpm2cpio $src | cpio -idmv";
-          installPhase = ''
-            mkdir -p $out
-            cp -r * $out/
-          '';
-        };
       lib.mkTrivalent =
         pkgs: arch:
         let
-          glibcRpm = self.lib.mkGlibC pkgs arch;
-          rpathsList = [
-            pkgs.glib.out
-            pkgs.gtk3
-            pkgs.pango.out
-            pkgs.atk
-            pkgs.cairo
-            pkgs.libx11
-            pkgs.libxcomposite
-            pkgs.libxdamage
-            pkgs.libxext
-            pkgs.libxfixes
-            pkgs.libxrandr
-            pkgs.libxkbcommon
-            pkgs.libxcb
-            pkgs.libgbm
-            pkgs.mesa
-            pkgs.alsa-lib
-            pkgs.pipewire
-            pkgs.nss
-            pkgs.nspr
-            pkgs.dbus.lib
-            pkgs.expat
-            pkgs.libffi
-            pkgs.cups.lib
-            pkgs.libgcc
-            pkgs.udev
-            pkgs.libcanberra-gtk3
-            pkgs.bubblewrap
-            pkgs.libGL
-          ];
-          rpaths = pkgs.lib.concatStringsSep "/lib:" rpathsList;
-
           trivalentUnwrapped = pkgs.stdenv.mkDerivation {
             pname = "trivalent";
             version = "154.0.8037.97"; # target-ver
@@ -120,38 +61,54 @@
               ln -s $out/lib64/trivalent/trivalent.sh $out/bin/trivalent-unwrapped
 
               substituteInPlace $out/bin/trivalent-unwrapped \
-                --replace "id" "${pkgs.coreutils}/bin/id" \
-                --replace "uname" "${pkgs.coreutils}/bin/uname" \
-                --replace "readlink" "${pkgs.coreutils}/bin/readlink" \
-                --replace "mkdir" "${pkgs.coreutils}/bin/mkdir" \
-                --replace "touch" "${pkgs.coreutils}/bin/touch" \
-                --replace "cat" "${pkgs.coreutils}/bin/cat" \
-                --replace "bwrap" "${pkgs.bubblewrap}/bin/bwrap"
+                --replace-quiet "id" "${pkgs.coreutils}/bin/id" \
+                --replace-quiet "uname" "${pkgs.coreutils}/bin/uname" \
+                --replace-quiet "readlink" "${pkgs.coreutils}/bin/readlink" \
+                --replace-quiet "mkdir" "${pkgs.coreutils}/bin/mkdir" \
+                --replace-quiet "touch" "${pkgs.coreutils}/bin/touch" \
+                --replace-quiet "cat" "${pkgs.coreutils}/bin/cat" \
+                --replace-quiet "bwrap" "${pkgs.bubblewrap}/bin/bwrap"
             '';
 
             postFixup = ''
-              patchelf --set-interpreter ${glibcRpm}/usr/lib64/ld-linux-${
-                if arch == "x86_64" then "x86-64" else arch
-              }.so.2 \
-                $out/lib/trivalent/trivalent
-
-              OLD_RPATH=$(patchelf --print-rpath "$out/lib/trivalent/trivalent" || echo "")
-
-              RPATHS="${glibcRpm}/usr/lib64:${rpaths}/lib"
-
-              if [ -n "$OLD_RPATH" ]; then
-                NEW_RPATH="$RPATHS:$OLD_RPATH"
-              else
-                NEW_RPATH="$RPATHS"
-              fi
-
-              patchelf --set-rpath "$NEW_RPATH" \
-                $out/lib/trivalent/trivalent
+              patchelf --set-interpreter /lib/ld-linux-${if arch == "x86_64" then "x86-64" else arch}.so.2 \
+                $out/lib/trivalent/trivalent || true
             '';
           };
         in
         pkgs.buildFHSEnv {
           name = "trivalent";
+          targetPkgs =
+            pkgs: with pkgs; [
+              glib.out
+              gtk3
+              pango.out
+              atk
+              cairo
+              libx11
+              libxcomposite
+              libxdamage
+              libxext
+              libxfixes
+              libxrandr
+              libxkbcommon
+              libxcb
+              libgbm
+              mesa
+              alsa-lib
+              pipewire
+              nss
+              nspr
+              dbus.lib
+              expat
+              libffi
+              cups.lib
+              libgcc
+              udev
+              libcanberra-gtk3
+              bubblewrap
+              libGL
+            ];
           runScript = "${trivalentUnwrapped}/lib/trivalent/trivalent";
           extraInstallCommands = ''
             mkdir -p $out/share/applications
