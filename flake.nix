@@ -36,12 +36,12 @@
                 if arch == "x86_64" then
                   "https://repo.secureblue.dev/Packages/trivalent-155.0.8059.39-447833.x86_64.rpm" # target-x86_64-dl
                 else
-                  "https://repo.secureblue.dev/Packages/trivalent-154.0.8037.97-447774.aarch64.rpm"; # target-aarch64-dl
+                  "https://repo.secureblue.dev/Packages/trivalent-155.0.8059.39-447839.aarch64.rpm"; # target-aarch64-dl
               hash =
                 if arch == "x86_64" then
                   "sha256-gc2rM2YyVrDdaHUPhfOftjM7AO4J41HnmuCoMKe1WDo=" # target-x86_64-hash
                 else
-                  "sha256-5AX4Z23wmnpVrxp5QD8aLQuHrU2GZnzySCMUGZ5BcBo="; # target-aarch64-hash
+                  "sha256-vysrpql/kJGLIn3n0U/wCEpOdbkhFb5lIvwxfmwYGKE="; # target-aarch64-hash
 
             };
 
